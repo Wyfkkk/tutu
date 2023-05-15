@@ -1,26 +1,10 @@
 <script setup>
-import { getBannerAPI } from "@/apis/home";
-import { getCategoryAPI } from "@/apis/category";
-import { useRoute } from "vue-router";
-import { onMounted, ref } from "vue";
 import GoodsItem from "../Home/components/GoodsItem.vue";
-const bannerList = ref([]);
-const getBanner = async () => {
-  const res = await getBannerAPI({ distributionSite: "2" });
-  bannerList.value = res.result;
-};
-onMounted(() => {
-  getBanner();
-});
-const categoryData = ref({});
-const route = useRoute();
-const getCategory = async () => {
-  const res = await getCategoryAPI(route.params.id);
-  categoryData.value = res.result;
-};
-onMounted(() => {
-  getCategory();
-});
+import {useBanner} from './composables/useBanner'
+import {useCategory} from './composables/useCategory'
+const {bannerList} = useBanner()
+const {categoryData} = useCategory()
+
 </script>
 
 <template>
@@ -30,7 +14,7 @@ onMounted(() => {
       <div class="bread-container">
         <el-breadcrumb separator=">">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item>居家</el-breadcrumb-item>
+          <el-breadcrumb-item>{{categoryData.name}}</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
       <!-- 轮播图 -->
@@ -45,7 +29,7 @@ onMounted(() => {
         <h3>全部分类</h3>
         <ul>
           <li v-for="i in categoryData.children" :key="i.id">
-            <RouterLink to="/">
+            <RouterLink :to="`/category/sub/${i.id}`">
               <img :src="i.picture" />
               <p>{{ i.name }}</p>
             </RouterLink>

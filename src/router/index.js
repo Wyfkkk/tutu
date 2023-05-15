@@ -3,6 +3,8 @@ import Login from '@/views/Login/index.vue'
 import Layout from '@/views/Layout/index.vue'
 import Home from '@/views/Home/index.vue'
 import Category from '@/views/Category/index.vue'
+import SubCategory from '@/views/SubCategory/index.vue'
+import Detail from '@/views/Detail/index.vue'
 //createRouter:创建路由实例
 //createWebHistory:创建history模式的路由
 const router = createRouter({
@@ -19,7 +21,18 @@ const router = createRouter({
         },
         {
           path:'/category/:id',
-          component:Category
+          component:Category,
+          
+        },
+        {
+          path:'/category/sub/:id',
+          component:SubCategory,
+          
+        },
+        {
+          path:'/detail/:id',
+          component:Detail,
+          
         }
       ]
     },
@@ -31,7 +44,13 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: Login
     }
-  ]
+  ],
+  //路由滚动行为
+  scrollBehavior(){
+    return {
+      top:0
+    }
+  }
 })
 
 export default router
