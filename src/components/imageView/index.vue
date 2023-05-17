@@ -26,7 +26,7 @@ const target = ref(null)
 const left = ref(0)
 const top = ref(0)
 const {elementX,elementY,isOutside} = useMouseInElement(target)
-watch([elementX,elementY],()=>{
+watch([elementX,elementY,isOutside],()=>{
   //如果鼠标没进盒子  不执行后面的逻辑 
   if(isOutside.value) return 
   if(elementX.value>100&&elementX.value<300){

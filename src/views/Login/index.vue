@@ -1,8 +1,16 @@
 <script setup>
+import {ref} from 'vue'
+import {loginAPI} from '@/apis/user.js'
+import { ElMessage } from 'element-plus'
+import 'element-plus/theme-chalk/el-message.css'
+import {useRouter} from 'vue-router'
+import { useUserStore } from '@/stores/user'
+const useStore = useUserStore()
 //表单校验 （账号名+密码）
 const form = ref({
   account: "",
   password: "",
+  agree: true,
 });
 //准备规则对象
 const rules = {
@@ -21,7 +29,41 @@ const rules = {
     },
     { min: 6, max: 14, message: "密码为6-14", trigger: "blur" },
   ],
+  agree: [
+    {
+      validator: (rule, value, callback) => {
+        //自定义校验逻辑
+        //勾选通过
+        if (value) {
+          callback();
+        } else {
+          callback(new Error("请勾选协议"));
+        }
+      },
+    },
+  ],
 };
+//获取表单实例做同意校验
+const formRef = ref(null);
+const router = useRouter()
+const doLogin = () => {
+  const {account,password} = form.value
+  //调研员实例方法
+  formRef.value.validate(async(valid) => {
+    //valid: 所有表单都通过校验 才为true
+    //已valid作为判断条件  如果通过校验才执行登录逻辑
+    if (valid) {
+      //todoLogin
+     await useStore.getUserInfo({account,password})
+      //1.提示用户
+      ElMessage({type:'success',message:'登录成功'})
+      //2.跳转首页
+      router.replace({path:'/'})
+    }
+  });
+};//用户名和密码   看文档通过简单的配置
+//同意协议  自定义规则
+//同意校验  通过调用from实例的方法validate-true
 </script>
 
 
@@ -47,6 +89,7 @@ const rules = {
         <div class="account-box">
           <div class="form">
             <el-form
+              ref="formRef"
               :model="form"
               :rules="rules"
               label-position="right"
@@ -59,12 +102,14 @@ const rules = {
               <el-form-item prop="password" label="密码">
                 <el-input v-model="form.password" />
               </el-form-item>
-              <el-form-item label-width="22px">
-                <el-checkbox size="large">
+              <el-form-item label-width="22px" prop="agree">
+                <el-checkbox size="large" v-model="form.agree">
                   我已同意隐私条款和服务条款
                 </el-checkbox>
               </el-form-item>
-              <el-button size="large" class="subBtn">点击登录</el-button>
+              <el-button size="large" @click="doLogin" class="subBtn"
+                >点击登录</el-button
+              >
             </el-form>
           </div>
         </div>
